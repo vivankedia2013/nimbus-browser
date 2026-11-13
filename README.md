@@ -71,7 +71,7 @@ npm start
 npm run dist:mac    # on a Mac
 npm run dist:win    # on Windows
 ```
-Or push a tag (`git tag v1.1.0 && git push --tags`) and GitHub Actions builds Windows and all Mac versions.
+Or push a tag (`git tag v1.1.1 && git push --tags`) and GitHub Actions builds Windows and all Mac versions.
 
 ## License
 MIT. See [LICENSE](LICENSE).

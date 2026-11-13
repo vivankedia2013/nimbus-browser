@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.1
+- Release workflow now builds a Mac .zip first (no disk-image tools needed) and tries the .dmg with retries; the release publishes whatever built, even if one platform fails.
+- Each Mac build now declares the right minimum macOS version (11 for the main build, 10.13 for legacy).
+
 ## 1.1.0
 **Security**
 - Fixed a code-injection hole: bookmark and history entries were inserted into inline event handlers, so a crafted URL could run code with access to the password vault. The UI no longer uses inline handlers and now has a strict Content-Security-Policy.

@@ -12,10 +12,10 @@ jobs:
       matrix:
         include:
           # macOS 11 to 26 (Intel + Apple Silicon) and Windows 10/11 use Electron 37
-          - { name: mac,        os: macos-15,       args: '--mac --x64 --arm64', electron: '',        suffix: '' }
+          - { name: mac,        os: macos-15,       platform: '--mac', arch: '--x64 --arm64', electron: '',        suffix: '',        extra: '' }
           # macOS 10.13 to 10.15 need the older Electron 22 (Intel only)
-          - { name: mac-legacy, os: macos-15,       args: '--mac --x64',         electron: '22.3.27', suffix: '-legacy' }
-          - { name: windows,    os: windows-latest, args: '--win --x64',         electron: '',        suffix: '' }
+          - { name: mac-legacy, os: macos-15,       platform: '--mac', arch: '--x64',         electron: '22.3.27', suffix: '-legacy', extra: '-c.mac.minimumSystemVersion=10.13' }
+          - { name: windows,    os: windows-latest, platform: '--win', arch: '--x64',         electron: '',        suffix: '',        extra: '' }
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -23,28 +23,51 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 20 }
+        with: { node-version: 22 }
       - run: npm install
       - name: Use Electron ${{ matrix.electron }} for old macOS
         if: matrix.electron != ''
         run: npm install --no-save electron@${{ matrix.electron }}
-      - name: Build installers
-        run: npx electron-builder ${{ matrix.args }} --publish never "-c.artifactName=Nimbus-\${version}-\${os}-\${arch}${{ matrix.suffix }}.\${ext}"
+
+      - name: Build Windows installer
+        if: matrix.platform == '--win'
+        run: npx electron-builder --win nsis ${{ matrix.arch }} --publish never "-c.artifactName=Nimbus-\${version}-\${os}-\${arch}${{ matrix.suffix }}.\${ext}"
+
+      # The .zip needs no disk-image tools, so it always works. Download it, unzip, drag Nimbus to Applications.
+      - name: Build macOS .zip
+        if: matrix.platform == '--mac'
+        run: npx electron-builder --mac zip ${{ matrix.arch }} --publish never ${{ matrix.extra }} "-c.artifactName=Nimbus-\${version}-\${os}-\${arch}${{ matrix.suffix }}.\${ext}"
+
+      # The .dmg uses Apple's hdiutil, which sometimes fails at random on build machines. Retry, and don't fail the build.
+      - name: Build macOS .dmg (retries)
+        if: matrix.platform == '--mac'
+        continue-on-error: true
+        run: |
+          for attempt in 1 2 3; do
+            npx electron-builder --mac dmg ${{ matrix.arch }} --publish never ${{ matrix.extra }} "-c.artifactName=Nimbus-\${version}-\${os}-\${arch}${{ matrix.suffix }}.\${ext}" && exit 0
+            echo "dmg attempt $attempt failed, retrying..."; sleep 20
+          done
+          exit 1
+
       - uses: actions/upload-artifact@v4
         with:
           name: nimbus-${{ matrix.name }}
           path: |
             dist/*.dmg
+            dist/*.zip
             dist/*.exe
           if-no-files-found: error
+
   release:
     needs: build
-    if: startsWith(github.ref, 'refs/tags/')
+    # publish whatever was built, even if one platform failed
+    if: ${{ !cancelled() && startsWith(github.ref, 'refs/tags/') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
         with:
           path: artifacts
+          pattern: nimbus-*
           merge-multiple: true
       - uses: softprops/action-gh-release@v2
         with:
@@ -52,9 +75,10 @@ jobs:
           generate_release_notes: true
           body: |
             **Windows 10 / 11:** `Nimbus-*-win-x64.exe`
-            **macOS 11 to 26, Apple Silicon (M1 and newer):** `Nimbus-*-mac-arm64.dmg`
-            **macOS 11 to 26, Intel:** `Nimbus-*-mac-x64.dmg`
-            **macOS 10.13 to 10.15 (Intel):** `Nimbus-*-mac-x64-legacy.dmg`
+            **macOS 11 to 26, Apple Silicon (M1 and newer):** `Nimbus-*-mac-arm64.dmg` (or `.zip`)
+            **macOS 11 to 26, Intel:** `Nimbus-*-mac-x64.dmg` (or `.zip`)
+            **macOS 10.13 to 10.15 (Intel):** `Nimbus-*-mac-x64-legacy.dmg` (or `.zip`)
 
+            The `.zip` files are the same app: unzip, then drag Nimbus to Applications.
             Installers are not code-signed. Windows: *More info → Run anyway*. macOS: right-click the app → *Open*.
           files: artifacts/*

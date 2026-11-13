@@ -1,6 +1,6 @@
 {
   "name": "nimbus-browser",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Nimbus: a fast, private browser with built-in AI, a CPU/RAM limiter, a password vault and a login page",
   "main": "main.js",
   "scripts": {
@@ -18,7 +18,7 @@
       ],
       "category": "public.app-category.productivity",
       "identity": null,
-      "minimumSystemVersion": "10.13",
+      "minimumSystemVersion": "11.0",
       "extendInfo": {
         "NSCameraUsageDescription": "Websites you allow can use your camera.",
         "NSMicrophoneUsageDescription": "Websites you allow can use your microphone.",
