@@ -1,0 +1,20 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https: http:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Nimbus</title><link rel="stylesheet" href="style.css"></head><body>
+<div id="lock"><div class="art"><h1>Nimbus</h1><p>Browse fast. Keep your logins close and your tabs light.</p></div>
+<form class="card" id="lf"><h2 id="lt">Welcome back</h2><input id="ln" placeholder="Profile name" autocomplete="off">
+<input id="lp" type="password" placeholder="Master password"><div id="le"></div><button class="primary" id="lb" type="submit">Unlock</button>
+<small>Your master password encrypts the password vault on this device. It can’t be recovered if you forget it.</small></form></div>
+<div id="app" hidden>
+<header id="tabbar"><div id="tabs"></div><button id="nt" title="New tab">+</button><button id="pt" title="New private tab">🕶</button></header>
+<div id="bar"><button id="bk" title="Back">‹</button><button id="fw" title="Forward">›</button><button id="rl" title="Reload">↻</button>
+<div id="ow"><input id="omni" placeholder="Search Google or type a URL" spellcheck="false" autocomplete="off"><div id="sg" hidden></div></div>
+<button id="kb" title="Fill saved password" hidden>🔑</button><button id="star" title="Bookmark">☆</button></div>
+<div id="main"><nav id="rail"><button data-p="bm" title="Bookmarks">★</button><button data-p="hist" title="History">◷</button><button data-p="dl" title="Downloads">⬇</button>
+<button data-p="pw" title="Passwords">⚿</button><button data-p="perf" title="Performance">⚡</button><span></span><button data-p="set" title="Settings">⚙</button></nav>
+<aside id="panel" hidden></aside>
+<section id="stage"><div id="views"></div><div id="start"></div><div id="ai"></div>
+<div id="find" hidden><input id="fq" placeholder="Find in page" autocomplete="off"><span id="fc"></span><button id="fp" title="Previous">‹</button><button id="fn" title="Next">›</button><button id="fx" title="Close">✕</button></div>
+<div id="pwbar" hidden></div></section></div>
+<div id="toast" hidden></div></div>
+<script src="app.js"></script></body></html>

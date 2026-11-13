@@ -1,0 +1,68 @@
+{
+  "name": "nimbus-browser",
+  "version": "1.1.0",
+  "description": "Nimbus: a fast, private browser with built-in AI, a CPU/RAM limiter, a password vault and a login page",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder",
+    "dist:mac": "electron-builder --mac --x64 --arm64 --publish never",
+    "dist:win": "electron-builder --win --x64 --publish never"
+  },
+  "build": {
+    "appId": "com.nimbus.browser",
+    "productName": "Nimbus",
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.productivity",
+      "identity": null,
+      "minimumSystemVersion": "10.13",
+      "extendInfo": {
+        "NSCameraUsageDescription": "Websites you allow can use your camera.",
+        "NSMicrophoneUsageDescription": "Websites you allow can use your microphone.",
+        "NSLocationWhenInUseUsageDescription": "Websites you allow can use your location."
+      }
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "artifactName": "Nimbus-${version}-${os}-${arch}.${ext}",
+    "directories": {
+      "buildResources": "build",
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**",
+      "package.json"
+    ],
+    "afterPack": "build/adhoc-sign.js",
+    "npmRebuild": false
+  },
+  "devDependencies": {
+    "electron": "37.10.3",
+    "electron-builder": "^25.1.8"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vivankedia2013/nimbus-browser.git"
+  },
+  "author": "vivankedia2013",
+  "license": "MIT",
+  "homepage": "https://github.com/vivankedia2013/nimbus-browser",
+  "keywords": [
+    "browser",
+    "electron",
+    "privacy",
+    "password-manager",
+    "ai",
+    "opera-gx",
+    "firefox",
+    "safari"
+  ]
+}
